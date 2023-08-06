@@ -8,6 +8,7 @@ export enum GameState {
   Starting = 'STARTING',
   Started = 'STARTED',
   Ended = 'ENDED',
+  Winner = 'WINNER',
 }
 
 export const START_DELAY = 1000 * 3;
@@ -53,7 +54,10 @@ const Game: FC = ({}) => {
         rotationDirection={rotationDirection}
         onOverlap={setIsOverlap}
       />
-      <button className="absolute inset-0 z-50" onClick={clickHandler} />
+      <button
+        className="absolute inset-0 z-50 w-full h-full"
+        onClick={clickHandler}
+      />
     </>
   );
 };

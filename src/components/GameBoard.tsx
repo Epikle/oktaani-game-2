@@ -64,6 +64,7 @@ const GameBoard: FC<GameBoardProps> = ({
     return () => {
       clearInterval(timer);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState, tickRate]);
 
   const startTimer = () => {
@@ -85,6 +86,7 @@ const GameBoard: FC<GameBoardProps> = ({
     return () => {
       clearInterval(timer2);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameState, startTime]);
 
   return (
