@@ -53,6 +53,7 @@ const Game: FC = ({}) => {
         points={points}
         rotationDirection={rotationDirection}
         onOverlap={setIsOverlap}
+        onStateChange={setGameState}
       />
       <button
         className="absolute inset-0 z-50 w-full h-full"

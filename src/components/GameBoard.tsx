@@ -17,6 +17,7 @@ interface GameBoardProps {
   points: number;
   rotationDirection: boolean;
   onOverlap: Dispatch<SetStateAction<boolean>>;
+  onStateChange: Dispatch<SetStateAction<GameState>>;
 }
 
 const GameBoard: FC<GameBoardProps> = ({
@@ -24,6 +25,7 @@ const GameBoard: FC<GameBoardProps> = ({
   points,
   rotationDirection,
   onOverlap,
+  onStateChange,
 }) => {
   let timer: NodeJS.Timer | undefined;
   let timer2: NodeJS.Timer | undefined;
@@ -31,6 +33,8 @@ const GameBoard: FC<GameBoardProps> = ({
   const targetRef = useRef<HTMLDivElement>(null);
   const [tickRate, setTickRate] = useState(false);
   const [startTime, setStartTime] = useState(START_DELAY);
+  const [needleDeg, setNeedleDeg] = useState(0);
+  const [targetDeg, setTargetDeg] = useState(45);
 
   const isOverlapping = () => {
     const rect1 = needleRef?.current?.getBoundingClientRect();
@@ -50,11 +54,20 @@ const GameBoard: FC<GameBoardProps> = ({
     if (!timer) {
       timer = setInterval(() => {
         setTickRate((prevS) => !prevS);
+        setNeedleDeg((prevS) =>
+          rotationDirection
+            ? (prevS -= 1 + points / 10)
+            : (prevS += 1 + points / 10)
+        );
       }, 10);
     }
 
     onOverlap(isOverlapping());
   };
+
+  useEffect(() => {
+    setTargetDeg(Math.random() * (359 - 0) + 0);
+  }, [points]);
 
   useEffect(() => {
     if (gameState === GameState.Started) {
@@ -130,17 +143,14 @@ const GameBoard: FC<GameBoardProps> = ({
 
         <div
           style={{
-            rotate: '0deg',
+            rotate: `${needleDeg}deg`,
+            transition: 'all 50ms linear',
           }}
           className={cn(
             'z-10 absolute m-auto left-0 right-0 w-1 h-1/2 origin-bottom bg-orange-500',
             {
               'animate-[spin_3s_linear_infinite_alternate]':
                 gameState === GameState.New || gameState === GameState.Ended,
-            },
-            {
-              'animate-[spin_3s_linear_infinite]':
-                gameState === GameState.Started,
             }
           )}
         >
@@ -148,8 +158,17 @@ const GameBoard: FC<GameBoardProps> = ({
         </div>
 
         {gameState === GameState.Started && (
-          <div className="flex justify-center origin-bottom rotate-90">
-            <div className="w-0 h-0 border-l-[50px] border-l-transparent border-t-[12rem] border-t-red-500 border-r-[50px] border-r-transparent" />
+          <div
+            style={{ rotate: `${targetDeg}deg` }}
+            className="flex justify-center origin-bottom"
+          >
+            <div
+              className={cn(
+                'w-0 h-0 border-l-[50px] border-l-transparent border-t-[12rem]  border-r-[50px] border-r-transparent',
+                { 'border-t-red-500': rotationDirection },
+                { 'border-t-green-500': !rotationDirection }
+              )}
+            />
             <div
               ref={targetRef}
               className="w-[95px] aspect-square absolute top-0 m-auto"
