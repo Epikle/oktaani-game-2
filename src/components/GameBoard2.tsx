@@ -72,13 +72,14 @@ const GameBoard2: FC = () => {
         break;
 
       case GameState.Ended:
+      case GameState.Winner:
         setCorrectColors([]);
         setGameState(GameState.Started);
         break;
 
       default:
         setCorrectColors([]);
-        setGameState(GameState.Started);
+        setGameState(GameState.New);
         break;
     }
   };
