@@ -9,10 +9,10 @@ export const Header: FC = () => {
           <li>
             oktaani<span className="font-bold text-gray-950">GAMES</span>
           </li>
-          <li>
+          <li className="hover:underline hover:underline-offset-4 hover:decoration-2">
             <Link href="/">Game 1</Link>
           </li>
-          <li>
+          <li className="hover:underline hover:underline-offset-4 hover:decoration-2">
             <Link href="/game2">Game 2</Link>
           </li>
         </ul>
