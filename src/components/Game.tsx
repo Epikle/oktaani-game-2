@@ -53,6 +53,7 @@ export const Game: FC = ({}) => {
       <button
         className="absolute inset-0 z-40 w-full h-full"
         onClick={clickHandler}
+        disabled={gameState === GameState.Starting}
       />
     </>
   );
