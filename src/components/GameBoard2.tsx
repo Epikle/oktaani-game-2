@@ -2,7 +2,7 @@
 
 import { FC, useState, useEffect } from 'react';
 import { Frown, Palette, Pointer, Trophy } from 'lucide-react';
-import { GameState } from './Game';
+import { GameState } from '@/lib/types';
 
 const TIMER = 500; // time in ms
 const DIFFICULTY = 30; // TIMER - (correctColors length * time in ms)
@@ -30,11 +30,14 @@ const GameBoard2: FC = () => {
 
   const tick = () => {
     if (!timer) {
-      timer = setInterval(() => {
-        setTickRate((prevS) => !prevS);
-        const nextIndex = (currentColor + 1) % colors.length;
-        setCurrentColor(nextIndex);
-      }, TIMER - correctColors.length * DIFFICULTY);
+      timer = setInterval(
+        () => {
+          setTickRate((prevS) => !prevS);
+          const nextIndex = (currentColor + 1) % colors.length;
+          setCurrentColor(nextIndex);
+        },
+        TIMER - correctColors.length * DIFFICULTY
+      );
     }
   };
 

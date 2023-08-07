@@ -1,190 +1,125 @@
 'use client';
 
 import {
-  Dispatch,
-  FC,
-  SetStateAction,
+  forwardRef,
   useEffect,
+  useImperativeHandle,
   useRef,
   useState,
 } from 'react';
 import { Pointer } from 'lucide-react';
-import { GameState, START_DELAY } from './Game';
-import { cn } from '@/lib/utils';
+
+import { START_DELAY } from './Game';
+import {
+  GameBoardBg,
+  GameBoardBgCenter,
+  GameBoardBgCenterText,
+} from './GameBoardBg';
+import { Needle } from './Needle';
+import { GameState } from '@/lib/types';
+import { useOverlap } from '@/hooks/useOverlap';
+import { Target, TargetDemo } from './Target';
 
 interface GameBoardProps {
   gameState: GameState;
   points: number;
   rotationDirection: boolean;
-  onOverlap: Dispatch<SetStateAction<boolean>>;
-  onStateChange: Dispatch<SetStateAction<GameState>>;
 }
 
-const GameBoard: FC<GameBoardProps> = ({
-  gameState,
-  points,
-  rotationDirection,
-  onOverlap,
-  onStateChange,
-}) => {
-  let timer: NodeJS.Timer | undefined;
-  let timer2: NodeJS.Timer | undefined;
-  const needleRef = useRef<HTMLDivElement>(null);
-  const targetRef = useRef<HTMLDivElement>(null);
-  const [tickRate, setTickRate] = useState(false);
-  const [startTime, setStartTime] = useState(START_DELAY);
-  const [needleDeg, setNeedleDeg] = useState(0);
-  const [targetDeg, setTargetDeg] = useState(45);
+export interface GameBoardMethods {
+  isOverlap: () => boolean;
+}
 
-  const isOverlapping = () => {
-    const rect1 = needleRef?.current?.getBoundingClientRect();
-    const rect2 = targetRef?.current?.getBoundingClientRect();
+export const GameBoard = forwardRef<GameBoardMethods, GameBoardProps>(
+  ({ gameState, points, rotationDirection }, ref) => {
+    let timer: NodeJS.Timer | undefined;
+    const needleRef = useRef<HTMLDivElement>(null);
+    const targetRef = useRef<HTMLDivElement>(null);
+    const [startTime, setStartTime] = useState(START_DELAY);
+    const [targetDeg, setTargetDeg] = useState(45);
+    const isOverlapping = useOverlap(needleRef, targetRef);
 
-    if (!rect1 || !rect2) return false;
+    useImperativeHandle(ref, () => ({
+      isOverlap: isOverlapping,
+    }));
+
+    const startTimer = () => {
+      if (!timer) {
+        timer = setInterval(() => {
+          setStartTime((prevS) => prevS - 1000);
+        }, 1000);
+      }
+    };
+
+    useEffect(() => {
+      if (gameState === GameState.Starting) {
+        startTimer();
+      } else {
+        clearInterval(timer);
+        setStartTime(START_DELAY);
+      }
+
+      return () => {
+        clearInterval(timer);
+      };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [gameState, startTime]);
+
+    useEffect(() => {
+      setTargetDeg(Math.floor(Math.random() * 360)); // 0-359deg
+    }, [points]);
 
     return (
-      rect1.bottom >= rect2.top &&
-      rect1.top <= rect2.bottom &&
-      rect1.right >= rect2.left &&
-      rect1.left <= rect2.right
-    );
-  };
-
-  const tick = () => {
-    if (!timer) {
-      timer = setInterval(() => {
-        setTickRate((prevS) => !prevS);
-        setNeedleDeg((prevS) =>
-          rotationDirection
-            ? (prevS -= 1 + points / 10)
-            : (prevS += 1 + points / 10)
-        );
-      }, 10);
-    }
-
-    onOverlap(isOverlapping());
-  };
-
-  useEffect(() => {
-    setTargetDeg(Math.random() * (359 - 0) + 0);
-  }, [points]);
-
-  useEffect(() => {
-    if (gameState === GameState.Started) {
-      tick();
-    }
-
-    return () => {
-      clearInterval(timer);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gameState, tickRate]);
-
-  const startTimer = () => {
-    if (!timer2) {
-      timer2 = setInterval(() => {
-        setStartTime((prevS) => prevS - 1000);
-      }, 1000);
-    }
-  };
-
-  useEffect(() => {
-    if (gameState === GameState.Starting) {
-      startTimer();
-    } else {
-      clearInterval(timer2);
-      setStartTime(START_DELAY);
-    }
-
-    return () => {
-      clearInterval(timer2);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [gameState, startTime]);
-
-  return (
-    <div className="relative grid place-items-center">
-      <div className="absolute margin-auto rounded-full aspect-square w-64 bg-cyan-600 animate-ping" />
-      <section className="relative rounded-full bg-slate-900 aspect-square w-96 overflow-hidden border-8 border-cyan-600">
-        <div className="absolute inset-0 grid place-items-center z-20">
-          <div className="rounded-full w-2/3 bg-cyan-600 aspect-square flex justify-center text-white">
-            {gameState === GameState.New && (
-              <div className="grid place-items-center">
-                <span className="self-end">CLICK</span>
-                <span className="font-bold text-6xl animate-bounce ">
-                  <Pointer size={64} />
-                </span>
-                <span className="self-start">TO PLAY</span>
-              </div>
-            )}
-            {gameState === GameState.Starting && (
-              <div className="grid place-items-center">
-                <span className="self-end">STARTING</span>
-                <span className="font-bold text-6xl">
-                  <span>{(startTime / 1000).toFixed(0)}</span>
-                </span>
-                <span className="self-start">IN</span>
-              </div>
-            )}
-            {gameState === GameState.Started && (
-              <div className="grid place-items-center">
-                <span className="font-bold text-6xl">{points}</span>
-              </div>
-            )}
-            {gameState === GameState.Ended && (
-              <div className="grid place-items-center">
-                <span className="self-end">GAME OVER</span>
-                <span className="font-bold text-6xl">{points}</span>
-                <span className="self-start">Click to play again</span>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div
-          style={{
-            rotate: `${needleDeg}deg`,
-            transition: 'all 50ms linear',
-          }}
-          className={cn(
-            'z-10 absolute m-auto left-0 right-0 w-1 h-1/2 origin-bottom bg-orange-500',
-            {
-              'animate-[spin_3s_linear_infinite_alternate]':
-                gameState === GameState.New || gameState === GameState.Ended,
-            }
+      <GameBoardBg>
+        <GameBoardBgCenter>
+          {gameState === GameState.New && (
+            <GameBoardBgCenterText
+              top="CLICK"
+              center={<Pointer size={64} />}
+              bottom="TO PLAY"
+              animate
+            />
           )}
-        >
-          <div ref={needleRef} className=" h-1" />
-        </div>
+          {gameState === GameState.Starting && (
+            <GameBoardBgCenterText
+              top="STARTING"
+              center={(startTime / 1000).toFixed(0)}
+              bottom="IN"
+            />
+          )}
+          {gameState === GameState.Started && (
+            <GameBoardBgCenterText center={points} />
+          )}
+          {gameState === GameState.Ended && (
+            <GameBoardBgCenterText
+              top="GAME OVER"
+              center={points}
+              bottom="Click to Play Again"
+            />
+          )}
+        </GameBoardBgCenter>
+
+        <Needle
+          gameState={gameState}
+          ref={needleRef}
+          points={points}
+          rotationDirection={rotationDirection}
+        />
 
         {gameState === GameState.Started && (
-          <div
-            style={{ rotate: `${targetDeg}deg` }}
-            className="flex justify-center origin-bottom"
-          >
-            <div
-              className={cn(
-                'w-0 h-0 border-l-[50px] border-l-transparent border-t-[12rem]  border-r-[50px] border-r-transparent',
-                { 'border-t-red-500': rotationDirection },
-                { 'border-t-green-500': !rotationDirection }
-              )}
-            />
-            <div
-              ref={targetRef}
-              className="w-[95px] aspect-square absolute top-0 m-auto"
-            />
-          </div>
+          <Target
+            ref={targetRef}
+            rotationDirection={rotationDirection}
+            targetDeg={targetDeg}
+          />
         )}
 
         {(gameState === GameState.New || gameState === GameState.Ended) && (
-          <>
-            <div className="absolute m-auto left-0 right-0 w-0 h-0 border-l-[50px] border-l-transparent border-t-[12rem] border-t-red-500 border-r-[50px] border-r-transparent origin-bottom" />
-            <div className="absolute m-auto left-0 right-0 w-0 h-0 border-l-[50px] border-l-transparent border-t-[12rem] border-t-green-500 border-r-[50px] border-r-transparent origin-bottom rotate rotate-90" />
-          </>
+          <TargetDemo />
         )}
-      </section>
-    </div>
-  );
-};
+      </GameBoardBg>
+    );
+  }
+);
 
-export default GameBoard;
+GameBoard.displayName = 'GameBoard';

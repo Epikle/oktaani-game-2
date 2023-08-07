@@ -1,23 +1,17 @@
 'use client';
 
-import { FC, useState } from 'react';
-import GameBoard from './GameBoard';
+import { FC, useRef, useState } from 'react';
 
-export enum GameState {
-  New = 'NEW',
-  Starting = 'STARTING',
-  Started = 'STARTED',
-  Ended = 'ENDED',
-  Winner = 'WINNER',
-}
+import { GameBoard, GameBoardMethods } from './GameBoard';
+import { GameState } from '@/lib/types';
 
 export const START_DELAY = 1000 * 3;
 
 const Game: FC = ({}) => {
+  const ref = useRef<GameBoardMethods>(null);
   const [gameState, setGameState] = useState(GameState.New);
   const [points, setPoints] = useState(0);
   const [rotationDirection, setRotationDirection] = useState(false);
-  const [isOverlap, setIsOverlap] = useState(false);
 
   const clickHandler = () => {
     switch (gameState) {
@@ -27,7 +21,7 @@ const Game: FC = ({}) => {
         break;
 
       case GameState.Started:
-        if (isOverlap) {
+        if (ref.current?.isOverlap()) {
           setPoints((prevS) => ++prevS);
           setRotationDirection((prevS) => !prevS);
         } else {
@@ -42,6 +36,8 @@ const Game: FC = ({}) => {
         break;
 
       default:
+        setPoints(0);
+        setGameState(GameState.New);
         break;
     }
   };
@@ -49,11 +45,10 @@ const Game: FC = ({}) => {
   return (
     <>
       <GameBoard
+        ref={ref}
         gameState={gameState}
         points={points}
         rotationDirection={rotationDirection}
-        onOverlap={setIsOverlap}
-        onStateChange={setGameState}
       />
       <button
         className="absolute inset-0 z-50 w-full h-full"
