@@ -31,7 +31,7 @@ export const Target = forwardRef<
       )}
       {...props}
     >
-      <div ref={ref} className="w-[96%] aspect-square mx-auto" />
+      <div ref={ref} className="w-[92%] h-2 mx-auto" />
     </div>
   </div>
 ));
