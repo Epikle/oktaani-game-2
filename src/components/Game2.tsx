@@ -141,7 +141,7 @@ export const Game2: FC = () => {
       </GameBoardBg>
 
       <button
-        className="absolute inset-0 z-50 w-full h-full"
+        className="absolute inset-0 z-40 w-full h-full"
         onClick={btnHandler}
       />
     </>

@@ -1,11 +1,13 @@
 import { FC } from 'react';
 
-const Home: FC = () => {
+import { Game } from '@/components/Game';
+
+const page: FC = ({}) => {
   return (
-    <main className="grid place-items-center min-h-screen bg-gray-900 overflow-hidden">
-      <h1>Hello</h1>
+    <main className="grid place-items-center flex-1">
+      <Game />
     </main>
   );
 };
 
-export default Home;
+export default page;
