@@ -7,7 +7,7 @@ import { GameState } from '@/lib/types';
 
 export const START_DELAY = 1000 * 3;
 
-const Game: FC = ({}) => {
+export const Game: FC = ({}) => {
   const ref = useRef<GameBoardMethods>(null);
   const [gameState, setGameState] = useState(GameState.New);
   const [points, setPoints] = useState(0);
@@ -57,5 +57,3 @@ const Game: FC = ({}) => {
     </>
   );
 };
-
-export default Game;

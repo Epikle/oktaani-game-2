@@ -1,6 +1,6 @@
 import { FC } from 'react';
 
-import Game from '@/components/Game';
+import { Game } from '@/components/Game';
 
 const page: FC = ({}) => {
   return (
