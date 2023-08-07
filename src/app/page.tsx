@@ -4,7 +4,7 @@ import { Game } from '@/components/Game';
 
 const page: FC = ({}) => {
   return (
-    <main className="grid place-items-center flex-1">
+    <main className="grid place-items-center flex-1 overflow-hidden">
       <Game />
     </main>
   );

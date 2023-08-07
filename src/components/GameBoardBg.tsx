@@ -46,8 +46,8 @@ export const GameBoardBgCenter: FC<GameBoardBgCenterProps> = ({ children }) => {
 export const GameBoardBg: FC<GameBoardBgProps> = ({ children }) => {
   return (
     <div className="relative grid place-items-center">
-      <div className="absolute margin-auto rounded-full aspect-square w-64 bg-cyan-600 animate-ping" />
-      <section className="relative rounded-full bg-slate-900 aspect-square w-96 overflow-hidden border-8 border-cyan-600">
+      <div className="absolute margin-auto rounded-full aspect-square w-56 bg-cyan-600 animate-ping" />
+      <section className="relative rounded-full bg-slate-900 aspect-square w-80 overflow-hidden border-8 border-cyan-600">
         {children}
       </section>
     </div>

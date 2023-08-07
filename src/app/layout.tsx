@@ -22,7 +22,7 @@ export default function RootLayout({
       <body
         className={cn(
           inter.className,
-          'min-h-screen flex flex-col bg-gray-900 overflow-hidden'
+          'min-h-screen flex flex-col bg-gray-900'
         )}
       >
         <Header />
