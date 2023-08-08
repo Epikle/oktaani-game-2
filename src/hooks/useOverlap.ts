@@ -1,3 +1,5 @@
+'use client';
+
 import { applyHysteresis } from '@/lib/utils';
 
 export const useOverlap = (

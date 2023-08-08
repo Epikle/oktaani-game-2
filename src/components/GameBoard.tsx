@@ -25,6 +25,7 @@ interface GameBoardProps {
   gameState: GameState;
   points: number;
   rotationDirection: boolean;
+  hScore: number;
 }
 
 export interface GameBoardMethods {
@@ -32,7 +33,7 @@ export interface GameBoardMethods {
 }
 
 export const GameBoard = forwardRef<GameBoardMethods, GameBoardProps>(
-  ({ gameState, points, rotationDirection }, ref) => {
+  ({ gameState, points, rotationDirection, hScore }, ref) => {
     let timer: NodeJS.Timer | undefined;
     let timer2: NodeJS.Timer | undefined;
     const needleRef = useRef<HTMLDivElement>(null);
@@ -120,7 +121,14 @@ export const GameBoard = forwardRef<GameBoardMethods, GameBoardProps>(
             <GameBoardBgCenterText
               top="GAME OVER"
               center={points}
-              bottom="Click to Play Again"
+              bottom={
+                <span className="text-xs font-bold">
+                  HIGH SCORE{' '}
+                  <span className="text-sm text-yellow-400">
+                    {points > hScore ? points : hScore}
+                  </span>
+                </span>
+              }
             />
           )}
         </GameBoardBgCenter>

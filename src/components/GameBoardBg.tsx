@@ -25,9 +25,9 @@ export const GameBoardBgCenterText: FC<GameBoardBgCenterTextProps> = ({
   return (
     <>
       {top && <span className="self-end">{top}</span>}
-      <span className={cn('font-bold text-6xl', { 'animate-bounce': animate })}>
+      <div className={cn('font-bold text-6xl', { 'animate-bounce': animate })}>
         {center}
-      </span>
+      </div>
       {bottom && <span className="self-start">{bottom}</span>}
     </>
   );
