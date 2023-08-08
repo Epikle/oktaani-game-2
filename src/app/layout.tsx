@@ -10,6 +10,7 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'oktaaniGAMES',
   description: 'Best Games Ever.',
+  viewport: { userScalable: false, width: 'device-width' },
 };
 
 export default function RootLayout({

@@ -19,6 +19,7 @@ import { Needle } from './Needle';
 import { GameState } from '@/lib/types';
 import { useOverlap } from '@/hooks/useOverlap';
 import { Target, TargetDemo } from './Target';
+import { normalizeAngle } from '@/lib/utils';
 
 interface GameBoardProps {
   gameState: GameState;
@@ -33,19 +34,44 @@ export interface GameBoardMethods {
 export const GameBoard = forwardRef<GameBoardMethods, GameBoardProps>(
   ({ gameState, points, rotationDirection }, ref) => {
     let timer: NodeJS.Timer | undefined;
+    let timer2: NodeJS.Timer | undefined;
     const needleRef = useRef<HTMLDivElement>(null);
-    const targetRef = useRef<HTMLDivElement>(null);
     const [startTime, setStartTime] = useState(START_DELAY);
-    const [targetDeg, setTargetDeg] = useState(45);
-    const isOverlapping = useOverlap(needleRef, targetRef);
+    const [targetDeg, setTargetDeg] = useState(0);
+    const [needleDeg, setNeedleDeg] = useState(0);
+    const isOverlapping = useOverlap(needleDeg, targetDeg, 18);
 
     useImperativeHandle(ref, () => ({
       isOverlap: isOverlapping,
     }));
 
-    const startTimer = () => {
+    const tick = () => {
       if (!timer) {
         timer = setInterval(() => {
+          setNeedleDeg((prevS) => {
+            const angle = rotationDirection
+              ? (prevS -= 1 + points / 10)
+              : (prevS += 1 + points / 10);
+            return normalizeAngle(angle);
+          });
+        }, 10);
+      }
+    };
+
+    useEffect(() => {
+      if (gameState === GameState.Started) {
+        tick();
+      }
+
+      return () => {
+        clearInterval(timer);
+      };
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [gameState, needleDeg]);
+
+    const startTimer = () => {
+      if (!timer2) {
+        timer2 = setInterval(() => {
           setStartTime((prevS) => prevS - 1000);
         }, 1000);
       }
@@ -55,12 +81,12 @@ export const GameBoard = forwardRef<GameBoardMethods, GameBoardProps>(
       if (gameState === GameState.Starting) {
         startTimer();
       } else {
-        clearInterval(timer);
+        clearInterval(timer2);
         setStartTime(START_DELAY);
       }
 
       return () => {
-        clearInterval(timer);
+        clearInterval(timer2);
       };
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [gameState, startTime]);
@@ -102,16 +128,12 @@ export const GameBoard = forwardRef<GameBoardMethods, GameBoardProps>(
         <Needle
           gameState={gameState}
           ref={needleRef}
-          points={points}
           rotationDirection={rotationDirection}
+          needleDeg={needleDeg}
         />
 
         {gameState === GameState.Started && (
-          <Target
-            ref={targetRef}
-            rotationDirection={rotationDirection}
-            targetDeg={targetDeg}
-          />
+          <Target rotationDirection={rotationDirection} targetDeg={targetDeg} />
         )}
 
         {(gameState === GameState.New || gameState === GameState.Ended) && (

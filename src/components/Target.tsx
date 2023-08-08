@@ -19,6 +19,7 @@ export const Target = forwardRef<
   }
 >(({ className, targetDeg, rotationDirection, ...props }, ref) => (
   <div
+    ref={ref}
     style={{ rotate: `${targetDeg}deg` }}
     className="absolute inset-0 origin-center"
   >
@@ -30,9 +31,7 @@ export const Target = forwardRef<
         className
       )}
       {...props}
-    >
-      <div ref={ref} className="w-[92%] h-2 mx-auto" />
-    </div>
+    />
   </div>
 ));
 
