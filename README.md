@@ -4,7 +4,7 @@
 
 ---
 
-![Preview image](https://raw.githubusercontent.com/Epikle/oktaani-game-2/main/oktaanigames-preview.webp)
+![Preview image](https://raw.githubusercontent.com/Epikle/oktaani-game-2/main/oktaanigames-preview.png)
 
 This is my first Next.js and Tailwind CSS project. Here, I've created two mini reaction games to learn how to use Next.js and Tailwind CSS.
 
