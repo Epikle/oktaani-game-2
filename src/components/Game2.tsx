@@ -15,7 +15,7 @@ const DIFFICULTY = 30; // TIMER - (correctColors length * time in ms)
 const COLORS = ['#7e22ce', '#4338ca', '#0f766e', '#ca8a04', '#ef4444'];
 
 export const Game2: FC = () => {
-  let timer: NodeJS.Timer | undefined;
+  let timer: ReturnType<typeof setInterval> | undefined;
   const [gameState, setGameState] = useState(GameState.New);
   const [tickRate, setTickRate] = useState(false);
   const [correctColors, setCorrectColors] = useState<string[]>([]);
@@ -48,7 +48,7 @@ export const Game2: FC = () => {
       clearInterval(timer);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tickRate]);
+  }, [tickRate, tick]);
 
   const btnHandler = () => {
     switch (gameState) {
@@ -59,6 +59,7 @@ export const Game2: FC = () => {
 
       case GameState.Started:
         setCorrectColors((prevS) => prevS.concat(COLORS[currentColor]));
+        setCurrentColor(Math.floor(Math.random() * COLORS.length));
 
         if (
           correctColors.length > 0 &&

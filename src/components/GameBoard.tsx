@@ -34,8 +34,8 @@ export interface GameBoardMethods {
 
 export const GameBoard = forwardRef<GameBoardMethods, GameBoardProps>(
   ({ gameState, points, rotationDirection, hScore }, ref) => {
-    let timer: NodeJS.Timer | undefined;
-    let timer2: NodeJS.Timer | undefined;
+    let timer: ReturnType<typeof setInterval> | undefined;
+    let timer2: ReturnType<typeof setInterval> | undefined;
     const needleRef = useRef<HTMLDivElement>(null);
     const [startTime, setStartTime] = useState(START_DELAY);
     const [targetDeg, setTargetDeg] = useState(0);
